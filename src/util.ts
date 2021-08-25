@@ -52,10 +52,12 @@ function scaleToFit(pointLists: Vec2[][], targetMin: Vec2, targetMax: Vec2): Vec
 
 /** Scale a drawing to fill a piece of paper, with the given size and margins. */
 export function scaleToPaper(pointLists: Vec2[][], paperSize: PaperSize, marginMm: number): Vec2[][] {
+  const newSize = vmul(paperSize.size, 1.25);
+  const marginVector = vmul({x: marginMm, y: marginMm}, 1.25);
   return scaleToFit(
     pointLists,
-    {x: marginMm, y: marginMm},
-    vsub(paperSize.size, {x: marginMm, y: marginMm})
+    marginVector,
+    vsub(newSize, marginVector)
   );
 }
 

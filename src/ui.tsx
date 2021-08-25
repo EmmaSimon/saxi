@@ -8,7 +8,7 @@ import {flattenSVG} from "flatten-svg";
 import {PaperSize} from "./paper-size";
 import {Device, Plan, PlanOptions, defaultPlanOptions, XYMotion} from "./planning";
 import {formatDuration} from "./util";
-import {Vec2} from "./vec";
+import {Vec2, vmul} from "./vec";
 
 import PlanWorker from "./plan.worker";
 
@@ -462,7 +462,7 @@ function PlanPreview(
     plan: Plan | null;
   }
 ) {
-  const ps = state.planOptions.paperSize;
+  const ps = vmul(state.planOptions.paperSize.size, 1.25);
   const strokeWidth = state.visualizationOptions.penStrokeWidth * Device.Axidraw.stepsPerMm
   const colorPathsByStrokeOrder = state.visualizationOptions.colorPathsByStrokeOrder
   const memoizedPlanPreview = useMemo(() => {
@@ -490,9 +490,9 @@ function PlanPreview(
   // w/h of svg.
   // first try scaling so that h = area.h. if w < area.w, then ok.
   // otherwise, scale so that w = area.w.
-  const {width, height} = ps.size.x / ps.size.y * previewSize.height <= previewSize.width
-    ? {width: ps.size.x / ps.size.y * previewSize.height, height: previewSize.height}
-    : {height: ps.size.y / ps.size.x * previewSize.width, width: previewSize.width};
+  const {width, height} = ps.x / ps.y * previewSize.height <= previewSize.width
+    ? {width: ps.x / ps.y * previewSize.height, height: previewSize.height}
+    : {height: ps.y / ps.x * previewSize.width, width: previewSize.width};
 
   const [microprogress, setMicroprogress] = useState(0);
   useLayoutEffect(() => {
@@ -534,7 +534,7 @@ function PlanPreview(
         style={{
           transform: `translateZ(0.001px) ` +
             `translate(${-width}px, ${-height}px) ` +
-            `translate(${posXMm / ps.size.x * 50}%,${posYMm / ps.size.y * 50}%)`
+            `translate(${posXMm / ps.x * 50}%,${posYMm / ps.y * 50}%)`
         }}
       >
         <g>
@@ -553,8 +553,8 @@ function PlanPreview(
     <rect
       x={state.planOptions.marginMm}
       y={state.planOptions.marginMm}
-      width={(ps.size.x - state.planOptions.marginMm * 2)}
-      height={(ps.size.y - state.planOptions.marginMm * 2)}
+      width={(ps.x - state.planOptions.marginMm * 2)}
+      height={(ps.y - state.planOptions.marginMm * 2)}
       fill="none"
       stroke="black"
       strokeWidth="0.1"
@@ -565,7 +565,7 @@ function PlanPreview(
     <svg
       width={width}
       height={height}
-      viewBox={`0 0 ${ps.size.x} ${ps.size.y}`}
+      viewBox={`0 0 ${ps.x} ${ps.y}`}
     >
       {memoizedPlanPreview}
       {margins}
