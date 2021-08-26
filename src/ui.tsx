@@ -7,7 +7,7 @@ import * as colormap from "colormap"
 import {flattenSVG} from "flatten-svg";
 import {PaperSize} from "./paper-size";
 import {Device, Plan, PlanOptions, defaultPlanOptions, XYMotion} from "./planning";
-import {formatDuration} from "./util";
+import {formatDuration, SCALING_FACTOR} from "./util";
 import {Vec2, vmul} from "./vec";
 
 import PlanWorker from "./plan.worker";
@@ -462,7 +462,7 @@ function PlanPreview(
     plan: Plan | null;
   }
 ) {
-  const ps = vmul(state.planOptions.paperSize.size, 1.25);
+  const ps = vmul(state.planOptions.paperSize.size, SCALING_FACTOR);
   const strokeWidth = state.visualizationOptions.penStrokeWidth * Device.Axidraw.stepsPerMm
   const colorPathsByStrokeOrder = state.visualizationOptions.colorPathsByStrokeOrder
   const memoizedPlanPreview = useMemo(() => {

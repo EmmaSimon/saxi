@@ -1,7 +1,7 @@
 import * as Optimization from "optimize-paths";
 import * as Planning from "./planning";
 import {Device, Plan, PlanOptions} from "./planning";
-import {dedupPoints, scaleToPaper, cropToMargins} from "./util";
+import {dedupPoints, scaleToPaper, cropToMargins, SCALING_FACTOR} from "./util";
 import {Vec2, vmul, vrot} from "./vec";
 
 // CSS, and thus SVG, defines 1px = 1/96th of 1in
@@ -30,7 +30,7 @@ export function replan(inPaths: Vec2[][], planOptions: PlanOptions): Plan {
   if (planOptions.fitPage) {
     paths = scaleToPaper(paths, planOptions.paperSize, planOptions.marginMm);
   } else {
-    paths = paths.map(ps => ps.map(p => vmul(p, mmPerSvgUnit)))
+    paths = paths.map(ps => ps.map(p => vmul(p, SCALING_FACTOR * mmPerSvgUnit)))
     if (planOptions.cropToMargins) {
       paths = cropToMargins(paths, planOptions.paperSize, planOptions.marginMm)
     }
@@ -40,9 +40,9 @@ export function replan(inPaths: Vec2[][], planOptions: PlanOptions): Plan {
   // filter based on the stroke. Rescaling doesn't change the number or order
   // of the paths.
   if (planOptions.layerMode === 'group') {
-    paths = paths.filter((path, i) => planOptions.selectedGroupLayers.has((inPaths[i] as any).groupId));
+    paths = paths.filter((path, i) => planOptions.selectedGroupLayers.has((inPaths[i] as any)?.groupId));
   } else if (planOptions.layerMode === 'stroke') {
-    paths = paths.filter((path, i) => planOptions.selectedStrokeLayers.has((inPaths[i] as any).stroke));
+    paths = paths.filter((path, i) => planOptions.selectedStrokeLayers.has((inPaths[i] as any)?.stroke));
   }
 
   if (planOptions.pointJoinRadius > 0) {
