@@ -1,4 +1,7 @@
-declare module '*.svg';
+declare module '*.svg' {
+  const content: string;
+  export default content;
+}
 declare module 'svgdom';
 declare module 'wake-lock';
 declare module '@serialport/binding-mock';
@@ -27,3 +30,5 @@ declare module 'flatten-svg' {
   import main = require('flatten-svg/index');
   export = main;
 }
+
+declare const IS_WEB: boolean
